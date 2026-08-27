@@ -1,0 +1,22 @@
+{
+  "name": "mp3-metadata",
+  "version": "1.0.0",
+  "description": "Éditeur local de métadonnées audio (MP3/WAV/FLAC) — sans réencodage.",
+  "main": "electron/main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "concurrently -n server,client -c blue,green \"npm:dev --prefix server\" \"npm:dev --prefix client\"",
+    "server": "npm run dev --prefix server",
+    "client": "npm run dev --prefix client",
+    "electron": "electron .",
+    "dev:electron": "concurrently -k -n server,client,electron -c blue,green,magenta \"npm:dev --prefix server\" \"npm:dev --prefix client\" \"wait-on tcp:4321 tcp:5173 && electron .\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^10.0.5",
+    "electron": "^44.0.0",
+    "wait-on": "^9.1.0"
+  }
+}
