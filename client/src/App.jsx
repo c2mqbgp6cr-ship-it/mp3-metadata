@@ -16,7 +16,30 @@ export default function App() {
   const [recentExports, setRecentExports] = useState([]);
 
   useEffect(() => {
-    checkHealth().catch(() => setServerUp(false));
+    // In dev, `wait-on` (see package.json) already blocks Electron from
+    // opening until the API server answers, so this succeeds instantly.
+    // In a packaged app, main.js spawns the server itself right before
+    // opening this window, so it can take a beat to come up — retry with
+    // backoff instead of flashing a permanent "server down" banner.
+    let cancelled = false;
+    const delays = [300, 600, 1000, 1500, 2000, 2000, 2000];
+    async function pingUntilUp() {
+      for (const delay of delays) {
+        if (cancelled) return;
+        try {
+          await checkHealth();
+          if (!cancelled) setServerUp(true);
+          return;
+        } catch {
+          if (!cancelled) setServerUp(false);
+          await new Promise((r) => setTimeout(r, delay));
+        }
+      }
+    }
+    pingUntilUp();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   function addRecentExport({ title, artist, bpm, cover }) {

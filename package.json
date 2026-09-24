@@ -9,7 +9,8 @@
     "server": "npm run dev --prefix server",
     "client": "npm run dev --prefix client",
     "electron": "electron .",
-    "dev:electron": "concurrently -k -n server,client,electron -c blue,green,magenta \"npm:dev --prefix server\" \"npm:dev --prefix client\" \"wait-on tcp:4321 tcp:5173 && electron .\""
+    "dev:electron": "concurrently -k -n server,client,electron -c blue,green,magenta \"npm:dev --prefix server\" \"npm:dev --prefix client\" \"wait-on tcp:4321 tcp:5173 && electron .\"",
+    "dist:mac": "npm run build --prefix client && electron-builder --mac dmg"
   },
   "keywords": [],
   "author": "",
@@ -17,6 +18,39 @@
   "devDependencies": {
     "concurrently": "^10.0.5",
     "electron": "^44.0.0",
+    "electron-builder": "^26.15.3",
     "wait-on": "^9.1.0"
+  },
+  "build": {
+    "appId": "com.rubenslama.mp3metadata",
+    "productName": "MP3 Metadata",
+    "asar": false,
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "package.json",
+      "electron/main.js",
+      "electron/preload.js",
+      "client/dist/**/*",
+      "server/**/*",
+      "!server/.gitignore",
+      "!server/README.md"
+    ],
+    "mac": {
+      "icon": "electron/icon.icns",
+      "category": "public.app-category.music",
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "dmg": {
+      "title": "${productName} ${version}"
+    }
   }
 }

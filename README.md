@@ -159,10 +159,34 @@ installé sur ta machine, tu peux définir la variable d'environnement
   (Electron, Vite/Rolldown, sharp) pour ta plateforme — prévois une
   connexion internet pour cette étape.
 
-## Prochaine étape possible
+## Empaqueter en .dmg (macOS)
 
-- Empaqueter l'app en `.app`/`.dmg` installable (via `electron-builder`)
-  pour ne plus dépendre de `npm run dev:electron`.
+Pour donner l'app à quelqu'un sans qu'il ait besoin d'installer Node,
+cloner le repo ou taper une commande :
+
+```bash
+npm install --prefix server
+npm install --prefix client
+npm install
+npm run dist:mac
+```
+
+Le `.dmg` est généré dans `release/` (non versionné). Il embarque le
+serveur et toutes ses dépendances (y compris `sharp` et `ffmpeg`) — la
+personne qui l'installe n'a rien d'autre à faire que glisser l'app dans
+`Applications` et l'ouvrir.
+
+L'app n'étant pas signée avec un certificat Apple Developer (payant),
+macOS Gatekeeper affiche un avertissement "développeur non identifié"
+au premier lancement : clic droit sur l'app → "Ouvrir" → confirmer,
+au lieu d'un double-clic classique. À refaire seulement à la toute
+première ouverture.
+
+**Important :** la fabrication du `.dmg` (étape `hdiutil`/`sips`) exige
+un vrai macOS — elle ne peut pas se faire depuis Cowork (bac à sable
+Linux), même quand ce bac à sable est relié à ton Mac. La commande
+ci-dessus doit être lancée dans un Terminal ouvert directement sur ta
+machine.
 
 ## Licence
 
@@ -244,3 +268,10 @@ système (clair/sombre) de macOS.
   `dist/` non versionné), ajout d'une licence MIT, et corrections de
   documentation obsolète (mentions d'un panneau latéral et d'une liste de
   morceaux, tous deux remplacés depuis).
+- 2026-09-24 — Ajout de l'empaquetage en app macOS installable (`npm run
+  dist:mac`, via `electron-builder`) : produit un `.dmg` autonome avec le
+  serveur et ses dépendances embarqués, sans avoir besoin d'installer Node ni de
+  lancer `npm run dev:electron`. Icône d'app dédiée (`.icns`, dérivée du logo).
+  Le serveur écrit désormais sa vérification de santé au démarrage avec
+  plusieurs tentatives (au lieu d'une seule) pour laisser le temps au serveur
+  embarqué de démarrer avant d'afficher une erreur.
